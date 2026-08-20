@@ -223,41 +223,45 @@ export const TargetSizeControl: React.FC<TargetSizeControlProps> = ({
       </div>
 
       {/* Advanced Options: Output Format & Strategy */}
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2 border-t border-slate-100">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-3 pt-2 border-t border-slate-100">
         {/* Output Format */}
-        <div className="space-y-1">
-          <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1">
+        <div className="lg:col-span-7 space-y-1">
+          <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1 font-mono">
             <FileType className="w-3 h-3 text-slate-500" />
             出力フォーマット (OUTPUT FORMAT)
           </label>
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+          <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-5 gap-1.5">
             {[
-              { id: 'auto', label: '自動最適化', desc: '画質と容量最善' },
-              { id: 'original', label: '元形式維持', desc: 'PNG/JPEGそのまま' },
-              { id: 'image/webp', label: 'WebP', desc: '高圧縮・透過対応' },
-              { id: 'image/jpeg', label: 'JPEG', desc: '写真・高互換' },
+              { id: 'original', label: '元形式維持', desc: 'そのまま維持', ext: 'ORIGINAL' },
+              { id: 'image/jpeg', label: 'JPEG', desc: '写真・最高互換', ext: '.jpg' },
+              { id: 'image/png', label: 'PNG', desc: '透過・可逆圧縮', ext: '.png' },
+              { id: 'image/webp', label: 'WebP', desc: '次世代高圧縮', ext: '.webp' },
+              { id: 'auto', label: '自動最適化', desc: 'スマート判定', ext: 'AUTO' },
             ].map((fmt) => (
               <button
                 key={fmt.id}
                 type="button"
                 onClick={() => setOutputFormat(fmt.id as OutputFormat)}
-                className={`p-2 rounded-md text-left border transition-all ${
+                className={`p-1.5 sm:p-2 rounded-md text-left border transition-all ${
                   outputFormat === fmt.id
-                    ? 'border-indigo-600 bg-indigo-50/70 ring-1 ring-indigo-600 text-indigo-950'
+                    ? 'border-indigo-600 bg-indigo-50/80 ring-1 ring-indigo-600 text-indigo-950'
                     : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
                 }`}
                 id={`btn-format-${fmt.id.replace('/', '-')}`}
               >
-                <div className="text-xs font-bold text-slate-900">{fmt.label}</div>
-                <div className="text-[10px] text-slate-500">{fmt.desc}</div>
+                <div className="flex items-center justify-between">
+                  <span className="text-xs font-bold text-slate-900">{fmt.label}</span>
+                  <span className="text-[9px] font-mono text-slate-400">{fmt.ext}</span>
+                </div>
+                <div className="text-[9px] sm:text-[10px] text-slate-500 leading-tight mt-0.5">{fmt.desc}</div>
               </button>
             ))}
           </div>
         </div>
 
         {/* Compression Priority */}
-        <div className="space-y-1">
-          <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1">
+        <div className="lg:col-span-5 space-y-1">
+          <label className="text-[11px] font-bold text-slate-700 uppercase tracking-wider flex items-center gap-1 font-mono">
             <Cpu className="w-3 h-3 text-slate-500" />
             最適化優先方針 (STRATEGY)
           </label>
@@ -266,32 +270,32 @@ export const TargetSizeControl: React.FC<TargetSizeControlProps> = ({
               {
                 id: 'balanced',
                 label: 'バランス',
-                desc: '画質・解像度を総合最適化',
+                desc: '画質・解像度を最適化',
               },
               {
                 id: 'quality',
                 label: '画質重視',
-                desc: 'ノイズ抑制・適度な縮小',
+                desc: 'ノイズ抑制・適度縮小',
               },
               {
                 id: 'resolution',
                 label: '解像度重視',
-                desc: 'ピクセル寸法を最大限維持',
+                desc: 'ピクセル寸法を維持',
               },
             ].map((p) => (
               <button
                 key={p.id}
                 type="button"
                 onClick={() => setPriority(p.id as CompressionPriority)}
-                className={`p-2 rounded-md text-left border transition-all ${
+                className={`p-1.5 sm:p-2 rounded-md text-left border transition-all ${
                   priority === p.id
-                    ? 'border-indigo-600 bg-indigo-50/70 ring-1 ring-indigo-600 text-indigo-950'
+                    ? 'border-indigo-600 bg-indigo-50/80 ring-1 ring-indigo-600 text-indigo-950'
                     : 'border-slate-200 bg-white hover:bg-slate-50 text-slate-700'
                 }`}
                 id={`btn-priority-${p.id}`}
               >
                 <div className="text-xs font-bold text-slate-900">{p.label}</div>
-                <div className="text-[10px] text-slate-500">{p.desc}</div>
+                <div className="text-[9px] sm:text-[10px] text-slate-500 leading-tight mt-0.5">{p.desc}</div>
               </button>
             ))}
           </div>

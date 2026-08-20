@@ -7,13 +7,13 @@ import { ComparisonModal } from './components/ComparisonModal';
 import { BatchSummaryBar } from './components/BatchSummaryBar';
 import { HelpModal } from './components/HelpModal';
 import { ImageItem, OutputFormat, CompressionPriority } from './types';
-import { compressToTargetSize, loadImage } from './utils/imageCompressor';
+import { compressToTargetSize, loadImage, getNormalizedMimeType } from './utils/imageCompressor';
 import { Sparkles, Layers, ArrowUpDown, Filter, HelpCircle } from 'lucide-react';
 
 export default function App() {
   const [items, setItems] = useState<ImageItem[]>([]);
   const [globalTargetSizeKB, setGlobalTargetSizeKB] = useState<number>(200);
-  const [globalOutputFormat, setGlobalOutputFormat] = useState<OutputFormat>('auto');
+  const [globalOutputFormat, setGlobalOutputFormat] = useState<OutputFormat>('original');
   const [globalPriority, setGlobalPriority] = useState<CompressionPriority>('balanced');
   
   const [activeCompareItem, setActiveCompareItem] = useState<ImageItem | null>(null);
@@ -128,6 +128,7 @@ export default function App() {
       for (const file of files) {
         const id = 'img_' + Math.random().toString(36).substring(2, 9) + '_' + Date.now();
         const originalDataUrl = URL.createObjectURL(file);
+        const normFormat = getNormalizedMimeType(file.type, file.name);
 
         let width = 0;
         let height = 0;
@@ -147,7 +148,7 @@ export default function App() {
           originalSize: file.size,
           originalWidth: width,
           originalHeight: height,
-          originalFormat: file.type || 'image/png',
+          originalFormat: normFormat,
           originalDataUrl,
           targetSizeKB: globalTargetSizeKB,
           outputFormat: globalOutputFormat,
@@ -167,6 +168,45 @@ export default function App() {
       });
     },
     [globalTargetSizeKB, globalOutputFormat, globalPriority, processItem]
+  );
+
+  /**
+   * Change Global Output Format and apply to current items
+   */
+  const handleSetGlobalOutputFormat = useCallback(
+    (format: OutputFormat) => {
+      setGlobalOutputFormat(format);
+      itemsRef.current.forEach((item) => {
+        processItem(item, undefined, format);
+      });
+    },
+    [processItem]
+  );
+
+  /**
+   * Change Global Strategy and apply to current items
+   */
+  const handleSetGlobalPriority = useCallback(
+    (p: CompressionPriority) => {
+      setGlobalPriority(p);
+      itemsRef.current.forEach((item) => {
+        processItem(item, undefined, undefined, p);
+      });
+    },
+    [processItem]
+  );
+
+  /**
+   * Change Global Target Size and apply to current items
+   */
+  const handleSetGlobalTargetSize = useCallback(
+    (kb: number) => {
+      setGlobalTargetSizeKB(kb);
+      itemsRef.current.forEach((item) => {
+        processItem(item, kb);
+      });
+    },
+    [processItem]
   );
 
   /**
@@ -282,11 +322,11 @@ export default function App() {
         {/* Global Settings & Controls */}
         <TargetSizeControl
           targetSizeKB={globalTargetSizeKB}
-          setTargetSizeKB={setGlobalTargetSizeKB}
+          setTargetSizeKB={handleSetGlobalTargetSize}
           outputFormat={globalOutputFormat}
-          setOutputFormat={setGlobalOutputFormat}
+          setOutputFormat={handleSetGlobalOutputFormat}
           priority={globalPriority}
-          setPriority={setGlobalPriority}
+          setPriority={handleSetGlobalPriority}
           onApplyToAll={handleApplyToAll}
           hasItems={items.length > 0}
         />
