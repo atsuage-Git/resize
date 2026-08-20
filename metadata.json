@@ -1,0 +1,6 @@
+{
+  "name": "Image Size Target Optimizer",
+  "description": "PNGやJPEG画像を希望の指定ファイルサイズ（KB/MB）に合わせて高画質・自動リサイズ・圧縮できるWebツール",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
